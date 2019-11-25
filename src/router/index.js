@@ -1,23 +1,51 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import Login from "../components/Login.vue";
+// import Auth from "../auth/auth";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "home",
-    component: Home
+    name: "login",
+    component: Login
+    // beforeEnter: (to, from, next) => {
+    //   if(localStorage.getItem("user-token")!=null || localStorage.getItem("user-token")!='' || localStorage.getItem("user-token")!= undefined ){
+    //     next('/todo');
+    //   }else{
+    //     next('/');
+    //   }
+    // }
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: "/guest",
+    name: "guest",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+      import(/* webpackChunkName: "about" */ "../views/Guest.vue")
+  },
+  {
+    path: "/todo",
+    name: "Todo",
+    component: () => import(/* webpackChunkName: "about" */ "../views/Todo.vue")
+  },
+  {
+    path: "/signup",
+    name: "signup",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../components/SignUp.vue")
+  },
+  {
+    path: "/test",
+    name: "test",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../components/test.vue")
+  },
+  {
+    path: "*",
+    name: "PageNotFound",
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../components/Page404.vue")
   }
 ];
 
