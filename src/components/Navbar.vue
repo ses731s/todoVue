@@ -2,19 +2,6 @@
   <div id="nav">
     <b-container fluid class="p-0">
       <header>
-        <!-- <b-navbar toggleable="lg" type="dark" variant="info">
-          <b-navbar-brand>ToDo App</b-navbar-brand>
-
-          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-          <b-collapse id="nav-collapse" is-nav>
-            <b-navbar-nav class="ml-auto">
-              <b-nav-item to="/" v-if="this.token == null || this.token == ''">Login</b-nav-item>
-              <b-nav-item v-if="this.token != null && this.token != ''" v-on:click="logout()">Logout</b-nav-item>
-              <b-nav-item v-if="this.token == null || this.token == ''" to="/guest">Guest User</b-nav-item>
-            </b-navbar-nav>
-          </b-collapse>
-        </b-navbar>-->
         <b-navbar toggleable="lg" type="dark" variant="info">
           <b-navbar-brand href="#">Todo</b-navbar-brand>
 
@@ -22,9 +9,14 @@
 
           <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav class="ml-auto">
-              <b-nav-item
+              <!-- <b-nav-item
                 v-if="$store.state.token == '' || $store.state.token == null"
                 to="/"
+                right
+              > -->
+              <b-nav-item
+                v-if="$store.state.token == '' || $store.state.token == null"
+                @click="login()"
                 right
               >
                 Log in
@@ -58,6 +50,9 @@
 <script>
 export default {
   methods: {
+    login() {
+      this.$router.push("/");
+    },
     logout() {
       localStorage.removeItem("user-token");
       localStorage.removeItem("user-id");

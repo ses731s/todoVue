@@ -8,7 +8,13 @@
         </div>
         <div class="my-3">
           <b-button v-b-modal.modal-1 class="text-center">
-            <span class="plusIcon" data-backdrop="static" data-keyboard="false" href="#">+</span>
+            <span
+              class="plusIcon"
+              data-backdrop="static"
+              data-keyboard="false"
+              href="#"
+              >+</span
+            >
             Add a Task
           </b-button>
 
@@ -25,7 +31,11 @@
               <b-row>
                 <form ref="form" @submit.stop.prevent="addTask" class="row">
                   <b-col sm="12" md="12" lg="12" xl="12">
-                    <b-form-group id="input-group-1" label="Task Name" label-for="taskname">
+                    <b-form-group
+                      id="input-group-1"
+                      label="Task Name"
+                      label-for="taskname"
+                    >
                       <b-form-input
                         id="dob"
                         v-model="$v.todo.taskname.$model"
@@ -39,12 +49,18 @@
                         v-if="
                           !$v.todo.taskname.required && $v.todo.taskname.$dirty
                         "
-                      >Task Name is required.</div>
+                      >
+                        Task Name is required.
+                      </div>
                     </b-form-group>
                   </b-col>
 
                   <b-col sm="12" md="12" lg="12" xl="12">
-                    <b-form-group id="input-group-2" label="Priority:" label-for="Priority">
+                    <b-form-group
+                      id="input-group-2"
+                      label="Priority:"
+                      label-for="Priority"
+                    >
                       <b-form-select
                         v-model="$v.todo.priority.$model"
                         :options="options"
@@ -57,12 +73,18 @@
                         v-if="
                           !$v.todo.priority.required && $v.todo.priority.$dirty
                         "
-                      >Priority is required.</div>
+                      >
+                        Priority is required.
+                      </div>
                     </b-form-group>
                   </b-col>
 
                   <b-col sm="12" md="12" lg="12" xl="12">
-                    <b-form-group id="input-group-3" label="Start Date:" label-for="startDate">
+                    <b-form-group
+                      id="input-group-3"
+                      label="Start Date:"
+                      label-for="startDate"
+                    >
                       <b-form-input
                         id="startDate"
                         v-model="$v.todo.startDate.$model"
@@ -78,17 +100,31 @@
                           !$v.todo.startDate.required &&
                             $v.todo.startDate.$dirty
                         "
-                      >Start Date is required.</div>
+                      >
+                        Start Date is required.
+                      </div>
+                      <div
+                        class="errorLabel"
+                        v-if="
+                          !$v.todo.startDate.minDate && $v.todo.startDate.$dirty
+                        "
+                      >
+                        Start Date should be greater than or equal to today.
+                      </div>
                     </b-form-group>
                   </b-col>
                   <b-col sm="12" md="12" lg="12" xl="12">
-                    <b-form-group id="input-group-4" label="End Date:" label-for="endDate">
+                    <b-form-group
+                      id="input-group-4"
+                      label="End Date:"
+                      label-for="endDate"
+                    >
                       <b-form-input
                         id="endDate"
                         v-model="$v.todo.endDate.$model"
                         :class="status($v.todo.endDate)"
                         type="date"
-                        :min="dateFormat()" 
+                        :min="dateFormat()"
                         :disabled="todo.startDate === null"
                         required
                         placeholder="Enter End Date"
@@ -98,11 +134,25 @@
                         v-if="
                           !$v.todo.endDate.required && $v.todo.endDate.$dirty
                         "
-                      >End Date is required.</div>
+                      >
+                        End Date is required.
+                      </div>
+                      <div
+                        class="errorLabel"
+                        v-if="
+                          !$v.todo.endDate.maxDate && $v.todo.endDate.$dirty
+                        "
+                      >
+                        End Date should not be less than or equal to start date.
+                      </div>
                     </b-form-group>
                   </b-col>
                   <b-col sm="12" md="12" lg="12" xl="12">
-                    <b-form-group id="input-group-5" label="Comments:" label-for="comments">
+                    <b-form-group
+                      id="input-group-5"
+                      label="Comments:"
+                      label-for="comments"
+                    >
                       <b-form-input
                         id="comments"
                         v-model="$v.todo.comments.$model"
@@ -116,7 +166,9 @@
                         v-if="
                           !$v.todo.comments.required && $v.todo.comments.$dirty
                         "
-                      >Comments is required.</div>
+                      >
+                        Comments is required.
+                      </div>
                     </b-form-group>
                   </b-col>
                 </form>
@@ -138,6 +190,7 @@
               <th>Priority</th>
               <th>Start Date</th>
               <th>End Date</th>
+              <th>Comments</th>
               <th>Edit</th>
               <th>Delete</th>
             </tr>
@@ -148,26 +201,46 @@
               :key="todo.id"
               v-on:remove="todos.splice(index, 1)"
             >
-              <td>{{ todo.taskname }}</td>
+              <td>
+                <span v-if="todo.taskname.length >= 10">{{
+                  todo.taskname.substring(0, 10).concat("...")
+                }}</span>
+                <span v-else>{{ todo.taskname }}</span>
+              </td>
               <td>{{ todo.priority }}</td>
               <td>{{ todo.startDate }}</td>
               <td>{{ todo.endDate }}</td>
+              <td>
+                <span v-if="todo.comments.length >= 10">{{
+                  todo.comments.substring(0, 10).concat("...")
+                }}</span>
+                <span v-else>{{ todo.comments }}</span>
+              </td>
               <td>
                 <button class="btn btn-info mx-2" v-on:click="editTask(todo)">
                   <i class="fa fa-pencil"></i>
                 </button>
               </td>
               <td>
-                <button class="btn btn-danger mx-2" v-on:click="deleteAlert(todo)">
+                <button
+                  class="btn btn-danger mx-2"
+                  v-on:click="deleteAlert(todo)"
+                >
                   <i class="fa fa-trash"></i>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-        <jw-pagination :items="todos" @changePage="onChangePage" :pageSize="pageSize"></jw-pagination>
+        <jw-pagination
+          :items="todos"
+          @changePage="onChangePage"
+          :pageSize="pageSize"
+        ></jw-pagination>
       </div>
-      <b-container v-else class="mt-5 text-center">No Tasks Added, Please add a Task</b-container>
+      <b-container v-else class="mt-5 text-center"
+        >No Tasks Added, Please add a Task</b-container
+      >
     </b-container>
   </b-container>
 </template>
@@ -218,10 +291,32 @@ export default {
         required
       },
       startDate: {
-        required
+        required,
+        minDate(value) {
+          if (value === "") {
+            return true;
+          } else {
+            if (value < this.dateFormat()) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        }
       },
       endDate: {
-        required
+        required,
+        maxDate(value) {
+          if (value === "") {
+            return true;
+          } else {
+            if (value < this.todo.startDate) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+        }
       },
       priority: {
         required
@@ -237,14 +332,14 @@ export default {
   methods: {
     dateFormat() {
       var d = new Date(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
         year = d.getFullYear();
 
-        if (month.length < 2) month = '0' + month;
-        if (day.length < 2) day = '0' + day;
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
 
-        return [year, month, day].join('-');
+      return [year, month, day].join("-");
     },
     onChangePage(pageOfItems) {
       // update page of items
@@ -310,18 +405,6 @@ export default {
             .catch(function(error) {
               console.log(error);
             });
-
-          this.$swal({
-            position: "top-end",
-            icon: "success",
-            title: "Your task added.",
-            showConfirmButton: false,
-            timer: 1500,
-            customClass: {
-              popup: "popup-class",
-              title: "title-class"
-            }
-          });
         }
       } else {
         let id = Math.random()
@@ -334,6 +417,17 @@ export default {
         this.$v.$reset();
         this.resetTodoForm();
       }
+      this.$swal({
+        position: "top-end",
+        icon: "success",
+        title: "Your task added successfully.",
+        showConfirmButton: false,
+        timer: 1500,
+        customClass: {
+          popup: "popup-class",
+          title: "title-class"
+        }
+      });
     },
     getTasks() {
       var _this = this;
@@ -395,17 +489,6 @@ export default {
           .catch(function(error) {
             console.log(error);
           });
-        this.$swal({
-          position: "top-end",
-          icon: "success",
-          title: "Your task updated.",
-          showConfirmButton: false,
-          timer: 1500,
-          customClass: {
-            popup: "popup-class",
-            title: "title-class"
-          }
-        });
       } else {
         this.todos.forEach(function(key, index) {
           if (index == _this.index) {
@@ -417,6 +500,17 @@ export default {
         this.todo = {};
         _this.getTasks();
       }
+      this.$swal({
+        position: "top-end",
+        icon: "success",
+        title: "Your task updated successfully.",
+        showConfirmButton: false,
+        timer: 1500,
+        customClass: {
+          popup: "popup-class",
+          title: "title-class"
+        }
+      });
     },
     editTask(taskObj) {
       const user = localStorage.getItem("user-type");
@@ -536,17 +630,9 @@ export default {
 }
 .error1 {
   margin-top: 15px;
-  font-size: 15px;
+  /* font-size: 15px; */
   color: red;
 }
-
-/* _---------------------------------- */
-/* input {
-  border: 1px solid silver;
-  border-radius: 4px;
-  background: white;
-  padding: 5px 10px;
-} */
 
 .dirty {
   border-color: #5a5;

@@ -34,13 +34,16 @@
               type="date"
               class="form-control"
               :class="status($v.dob)"
-              name="bday" 
+              name="bday"
               min="<?= date('Y-m-d'); ?>"
               placeholder="Enter your DOB"
               v-model.trim="$v.dob.$model"
             />
             <div class="errorLabel" v-if="!$v.dob.required && $v.dob.$dirty">
               *DOB is required
+            </div>
+            <div class="errorLabel" v-if="!$v.dob.validateDOB && $v.dob.$dirty">
+              *User must be atleast 18 year old.
             </div>
           </div>
 
@@ -62,17 +65,17 @@
             >
               *Email is required
             </div>
-            <div
+            <!-- <div
               class="errorLabel"
               v-if="!$v.emailID.email && $v.emailID.$dirty"
             >
               Enter valid email address.
-            </div>
+            </div> -->
             <div
               class="errorLabel"
               v-if="!$v.emailID.isUnique && $v.emailID.$dirty"
             >
-              Email is already registered.
+              Enter valid email address.
             </div>
           </div>
 
@@ -100,6 +103,13 @@
             >
               *Password must have at least
               {{ $v.password.$params.minLength.min }} letters.
+            </div>
+            <div
+              class="errorLabel"
+              v-if="!$v.password.maxLength && $v.password.$dirty"
+            >
+              *Password should not be more than
+              {{ $v.password.$params.maxLength.max }} letters.
             </div>
           </div>
 
@@ -131,10 +141,10 @@
           <button class="btn btn-info">
             <router-link to="/">Login</router-link>
           </button>
-          <p class="typo__p" v-if="submitStatus === 'ERROR'">
+          <p class="typo__p error1" v-if="submitStatus === 'ERROR'">
             Please fill the form correctly.
           </p>
-          <p v-if="this.error">
+          <p v-if="this.error" class="error1">
             {{ this.APIerror }}
           </p>
         </div>
@@ -148,8 +158,7 @@ import {
   required,
   sameAs,
   minLength,
-  maxLength,
-  email
+  maxLength
 } from "vuelidate/lib/validators";
 
 export default {
@@ -160,7 +169,7 @@ export default {
       emailID: "",
       password: "",
       confirmPassword: "",
-      error: "",
+      error: false,
       APIerror: "",
       date: "",
       submitStatus: null
@@ -171,22 +180,38 @@ export default {
       required
     },
     dob: {
-      required
+      required,
+      validateDOB(value) {
+        var minAge = 18;
+        value = value.replace(/-/g, "");
+        var year = Number(value.substr(0, 4));
+        var month = Number(value.substr(4, 2)) - 1;
+        var day = Number(value.substr(6, 2));
+        var today = new Date();
+        var age = today.getFullYear() - year;
+        if (
+          today.getMonth() < month ||
+          (today.getMonth() == month && today.getDate() < day)
+        ) {
+          age--;
+        }
+        if (age > minAge) {
+          return true;
+        }
+        return false;
+      }
     },
     emailID: {
       required,
-      email,
-      isUnique (value) {
-        if (value === "") return true
+      isUnique(value) {
+        if (value === "") return true;
         //eslint-disable-next-line
-        var emailRe = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
-
-        return (emailRe.test(value))
-        // return new Promise((resolve) => {
-        //   setTimeout(() => {
-        //     resolve(emailRe.test(value))
-        //   }, 350 + Math.random() * 300)
-        // })
+        var emailRe = /^([a-zA-Z_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/i;
+        console.log(emailRe.test(value));
+        if (emailRe.test(value)) {
+          return true;
+        }
+        return false;
       }
     },
     password: {
@@ -230,14 +255,32 @@ export default {
         };
         this.axios
           .post("http://180.149.241.208:3022/userRegistration", userData)
-          .then(function() {
+          .then(function(response) {
             _this.registrationAlert();
             _this.$router.push({ name: "login" });
+            return response;
           })
           .catch(function(error) {
             console.log(error);
-            this.APIerror = error.response.data.error_message.errmsg;
+            debugger;
+            if (error.response) {
+              _this.error = true;
+              //  alert(error.response.data.message);
+              _this.APIerror = error.response.data.error_message.errmsg;
+              _this.$swal({
+                position: "top-end",
+                icon: "error",
+                title: "Oops... " + error.response.data.message,
+                showConfirmButton: false,
+                timer: 1500,
+                customClass: {
+                  popup: "popup-class",
+                  title: "title-class"
+                }
+              });
+            }
           });
+        // _this.APIerror = _this.error.response.data.error_message.errmsg;
       }
     }
   }
@@ -267,7 +310,7 @@ a:hover {
 }
 .error1 {
   margin-top: 15px;
-  font-size: 15px;
+  /* font-size: 15px; */
   color: red;
 }
 
@@ -281,7 +324,7 @@ a:hover {
 }
 
 .error {
-  font-size: 12px;
+  /* font-size: 12px; */
   border-color: red;
   background: #fdd;
 }

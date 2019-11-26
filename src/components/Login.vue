@@ -187,7 +187,7 @@ a:hover {
 }
 .error1 {
   margin-top: 15px;
-  font-size: 15px;
+  /* font-size: 15px; */
   color: red;
 }
 
@@ -209,7 +209,7 @@ a:hover {
 }
 
 .error {
-  font-size: 12px;
+  /* font-size: 12px; */
   border-color: red;
   background: #fdd;
 }
